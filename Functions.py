@@ -22,10 +22,22 @@ X_train_sample_scaled = scaler.fit_transform(X_train_sample)
 def one_vs_all(X_train, y_train, X_test, C, gamma):
     predictions = {}
     for number in range(10):
-        yy = np.where(y_train == str(number), 1, 0)
+        yy = np.where(y_train == number, 1, 0)
         classifier = SVC(C=C, gamma=gamma, kernel='rbf')
         classifier.fit(X_train, yy)
         predictions[number] = classifier.predict(X_test)
     return predictions
 
-one_vs_all(X_train_sample_scaled, y_train_sample, scaler.transform(X_test), 4.92, 0.001)
+
+
+def get_accuracy(predictions, y_test):
+    accuracies = {}
+    true_labels = list(y_test.values())
+    for number in range(10):
+        my_predicted_labels = predictions[number]
+        true_labels_class = [y_test[i] for i in range(len(y_test)) if my_predicted_labels[i] == 1]
+        accuracy = sum([1 for i in range(len(true_labels_class)) if true_labels_class[i] == number]) / len(true_labels_class)
+        accuracies[number] = accuracy
+    return accuracies
+
+
