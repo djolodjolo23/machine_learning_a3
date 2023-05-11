@@ -1,23 +1,6 @@
 import numpy as np
-from sklearn.datasets import fetch_openml
-from sklearn.model_selection import cross_val_score, GridSearchCV
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
-import pandas as pd
 
-
-zzz = "prin"
-kk = "s"
-
-mnist = fetch_openml('mnist_784', version=1)
-#%%
-X, y = mnist.data.values, mnist.target.values
-random = np.random.randint(1, 1001)
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=60000, random_state=random)
-X_train_sample, _, y_train_sample, _ = train_test_split(X_train, y_train, train_size=2000, random_state=random)
-scaler = StandardScaler()
-X_train_sample_scaled = scaler.fit_transform(X_train_sample)
 
 def one_vs_all(X_train, y_train, X_test, C, gamma):
     predictions = {}
@@ -28,16 +11,15 @@ def one_vs_all(X_train, y_train, X_test, C, gamma):
         predictions[number] = classifier.predict(X_test)
     return predictions
 
-
-
-def get_accuracy(predictions, y_test):
-    accuracies = {}
-    true_labels = list(y_test.values())
-    for number in range(10):
-        my_predicted_labels = predictions[number]
-        true_labels_class = [y_test[i] for i in range(len(y_test)) if my_predicted_labels[i] == 1]
-        accuracy = sum([1 for i in range(len(true_labels_class)) if true_labels_class[i] == number]) / len(true_labels_class)
-        accuracies[number] = accuracy
-    return accuracies
-
+def get_nodes_at_some_depth(tree, depth):
+    current_depth_nodes = [0]
+    for _ in range (depth):
+        next_depth_nodes = []
+        for node in current_depth_nodes:
+            if tree.tree_.children_left[node] != -1:
+                next_depth_nodes.append(tree.tree_.children_left[node])
+            if tree.tree_.children_right[node] != -1:
+                next_depth_nodes.append(tree.tree_.children_right[node])
+        current_depth_nodes = next_depth_nodes
+    return current_depth_nodes
 
