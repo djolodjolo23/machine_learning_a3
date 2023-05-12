@@ -23,3 +23,12 @@ def get_nodes_at_some_depth(tree, depth):
         current_depth_nodes = next_depth_nodes
     return current_depth_nodes
 
+def get_accuracy_at_some_depth(tree, depth, X, y):
+    nodes = get_nodes_at_some_depth(tree, depth)
+    X_selected = X[:, tree.tree_.feature[nodes]]
+    y_pred = tree.predict(X_selected)
+    X_selected_at_depth = X_selected[np.isin(tree.apply(X_selected), nodes)]
+    y_pred_at_depth = y_pred[np.isin(tree.apply(X_selected), nodes)]
+    y_true_at_depth = y[np.isin(tree.apply(X_selected), nodes)]
+    accuracy = np.mean(y_pred_at_depth == y_true_at_depth)
+    return accuracy
